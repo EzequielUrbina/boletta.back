@@ -9,7 +9,7 @@ public static class SwaggerServiceExtensions
 {
     public static void SwaggerUIConfig(this SwaggerUIOptions options)
     {
-        options.SwaggerEndpoint("/swagger/v7/swagger.json", "WSMCBL_API_V7");
+        options.SwaggerEndpoint("/swagger/v7/swagger.json", "Boletta_API_V7");
         options.RoutePrefix = string.Empty;
     }
     
@@ -20,12 +20,12 @@ public static class SwaggerServiceExtensions
             options.SwaggerDoc(name: "v7",
                 info: new OpenApiInfo
                 {
-                    Version = "v7", Title = "WSMCBL_API",
-                    Description = "API of the Web System for Management of Colegio Bautista Libertad",
+                    Version = "v7", Title = "Boletta_API",
+                    Description = "API of the Web System for Boletta",
                     Contact = new OpenApiContact
                     {
                         Name = "Client",
-                        Url = new Uri(uriString: $"https://cbl-edu.com")
+                        Url = new Uri(uriString: $"https://boletta.app")
                     }
                 });
 
