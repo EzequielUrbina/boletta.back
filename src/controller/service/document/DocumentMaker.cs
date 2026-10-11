@@ -353,6 +353,9 @@ public class DocumentMaker(DaoFactory daoFactory) : PdfMaker
 
     public async Task<byte[]> getAcademicRecord(string studentId, string schoolyearId, string userAlias)
     {
+        var schoolName = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_NAME") ?? "Colegio De Prueba";
+        var schoolEmail = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_EMAIL") ?? "info@boletta.app";
+        
         var schoolyear = await daoFactory.schoolyearDao!.getById(schoolyearId);
         if (schoolyear == null)
         {
@@ -371,6 +374,8 @@ public class DocumentMaker(DaoFactory daoFactory) : PdfMaker
             .withSubjectAreaList(await daoFactory.subjectAreaDao!.getAll())
             .withSubjectList(await daoFactory.academySubjectDao!.getByEnrollmentId(student.enrollmentId!))
             .withEnrollmentLabel(enrollment!.label)
+            .withSchoolName(schoolName)
+            .withSchoolEmail(schoolEmail)
             .build();
 
         setLatexBuilder(latexBuilder);

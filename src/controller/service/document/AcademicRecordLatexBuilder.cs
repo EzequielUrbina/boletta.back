@@ -9,6 +9,8 @@ namespace wsmcbl.src.controller.service.document;
 
 public class AcademicRecordLatexBuilder(string templatesPath, string outPath) : LatexBuilder(templatesPath, outPath)
 {
+    private string schoolName { get; set; } = null!;
+    private string schoolEmail { get; set; } = null!;
     private string userAlias { get; set; } = null!;
     private string enrollmentLabel { get; set; } = null!;
     private string schoolyearLabel { get; set; } = null!;
@@ -24,7 +26,7 @@ public class AcademicRecordLatexBuilder(string templatesPath, string outPath) : 
     {
         var content = new StringBuilder(value);
         
-        content.Replace("logo.value", $"{getImagesPath()}/cbl-logo-wb.png");
+        content.Replace("logo.value", $"{getImagesPath()}/Boletta500x500.png");
         
         content.Replace("schoolyear.value", schoolyearLabel);
         
@@ -45,6 +47,9 @@ public class AcademicRecordLatexBuilder(string templatesPath, string outPath) : 
         content.Replace("user.alias.value", userAlias);
         content.Replace("current.date.value", DateTime.UtcNow.toString());
         content.Replace("current.datetime.value", DateTime.UtcNow.toStringFull());
+        
+        content.Replace("school.name.value", schoolName);
+        content.Replace("school.email.value", schoolEmail);
 
         return content.ToString();
     }
@@ -227,5 +232,18 @@ public class AcademicRecordLatexBuilder(string templatesPath, string outPath) : 
             latexBuilder.enrollmentLabel = parameter;
             return this;
         }
+        
+        public Builder withSchoolName(string parameter)
+        {
+            latexBuilder.schoolName = parameter;
+            return this;
+        }
+
+        public Builder withSchoolEmail(string parameter)
+        {
+            latexBuilder.schoolEmail = parameter;
+            return this;
+        }
+        
     }   
 }

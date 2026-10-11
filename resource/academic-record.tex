@@ -13,6 +13,9 @@
 \usepackage[spanish]{babel}
 \usepackage[left=1.6cm, right=1.6cm, top=4cm, bottom=1.6cm, headheight=2cm, headsep=1cm]{geometry}
 
+\newcommand{\schoolName}{school.name.value}
+\newcommand{\schoolEmail}{school.email.value}
+
 \pagestyle{fancy}
 \fancyhead[C]
 {
@@ -24,9 +27,9 @@
         \hspace{0.01\textwidth}
         \begin{minipage}[c][2.5cm]{0.6\textwidth}
             \centering
-            \textbf{\LARGE Colegio Bautista Libertad}\\[0.2cm]
+            \textbf{\LARGE \schoolName}\\[0.2cm]
             \textbf{\Large Historial académico \schoolYear}\\[0.1cm]
-            Contacto: info@cbl-edu.com
+            Contacto: \schoolEmail
         \end{minipage}
     }
 }
@@ -62,11 +65,11 @@
 \makeatother
 
 \AddToShipoutPictureBG*{
-    \put(\LenToUnit{1.6cm},\LenToUnit{45}){\footnotesize Impreso por wsmcbl el \currentDatetime, \userAlias.}
+    \put(\LenToUnit{1.6cm},\LenToUnit{45}){\footnotesize Impreso por Boletta el \currentDatetime, \userAlias.}
 }
 
 \begin{document}    
-    El estudiante \textbf{\studentName} con código mined \textbf{\minedId} quien cursó (o cursa) el \textbf{\enrollmentName}
+    El estudiante \textbf{\studentName} con código \textbf{\minedId} quien cursó (o cursa) el \textbf{\enrollmentName}
     del plan de estudio de educación secundaria para el año lectivo \textbf{\schoolYear} del turno diurno, obtuvo las siguientes calificaciones:
 
     \begin{table}[h]
@@ -116,5 +119,5 @@
         \end{tabular}
     \end{table}
 
-    Este \textbf{no es un documento oficial} y está destinado para el \textbf{uso interno} de la institución, emitido en la cuidad de Managua, el \currentDate.
+    Este \textbf{documento no es valido sin firma ni sello ni sustituye un certificado de notas}, emitido en la cuidad de Managua, el \currentDate.
 \end{document}
