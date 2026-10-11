@@ -39,8 +39,9 @@ public class CreateUserController : BaseController
         user.password = password;
 
         await createRole(user);
-        await createEmailAccount(user);
-        await createNextcloudAccount(user, groupName);
+        //Deshabilitado por motivos de fuera del plan actual.
+        //await createEmailAccount(user);
+        //await createNextcloudAccount(user, groupName);
         
         return user;
     }

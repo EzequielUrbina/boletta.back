@@ -73,17 +73,18 @@ public class UserEntity
     {
         var name_email = getTextInEmailFormat(name);
         var surname_email = getTextInEmailFormat(surname);
+    
+        var baseEmail = $"{name_email}.{surname_email}";
+        var candidateEmail = $"{baseEmail}@boletta.app";
+        int counter = 1;
         
-        while (true)
+        while (await userDao.isEmailAlreadyRegistered(candidateEmail))
         {
-            email = $"{name_email}.{surname_email}{RandomNumberGenerator.GetInt32(10, 100)}@cbl-edu.com";
-        
-            var isDuplicate = await userDao.isEmailAlreadyRegistered(email);
-            if (!isDuplicate)
-            {
-                break;
-            }
+            candidateEmail = $"{baseEmail}{counter}@boletta.app";
+            counter++;
         }
+
+        email = candidateEmail;
     }
 
     private static string getTextInEmailFormat(string value)

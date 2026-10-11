@@ -6,7 +6,8 @@ namespace wsmcbl.src.utilities;
 
 public static class Utility
 {
-    public static string generalSecretary => "Secretario";
+    public static string generalSecretary => 
+        Environment.GetEnvironmentVariable("BOLETTA_SECRETARY") ?? "Secretaría General";    
     
     public static DateTime parseToDatetime(this string value)
     {
