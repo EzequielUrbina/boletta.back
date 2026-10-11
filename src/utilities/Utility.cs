@@ -6,7 +6,7 @@ namespace wsmcbl.src.utilities;
 
 public static class Utility
 {
-    public static string generalSecretary => "Thelma Ríos Zeas";
+    public static string generalSecretary => "Secretario";
     
     public static DateTime parseToDatetime(this string value)
     {
