@@ -12,6 +12,9 @@ public class EnrollSheetLatexBuilder(string templatesPath, string outputPath) : 
     private string? newSchoolyear { get; set; }
     private StudentEntity? entity { get; set; }
     private model.academy.StudentEntity? academyStudent { get; set; }
+
+    private string schoolName { get; set; } = null!;
+    private string schoolEmail { get; set; } = null!;
     
     protected override string getTemplateName() => "enroll-sheet";
     
@@ -20,7 +23,7 @@ public class EnrollSheetLatexBuilder(string templatesPath, string outputPath) : 
         var content = new StringBuilder(value);
         content.ReplaceInLatexFormat("schoolyear.value", newSchoolyear);
         
-        content.ReplaceInLatexFormat("logo.value", $"{getImagesPath()}/cbl-logo-wb.png");
+        content.ReplaceInLatexFormat("logo.value", $"{getImagesPath()}/logo.png");
         content.ReplaceInLatexFormat("enroll.date.value", academyStudent!.getCreateAtByDateOnly().toString("dddd dd/MMM/yyyy"));
         content.ReplaceInLatexFormat("student.name.value", entity!.fullName());
         content.ReplaceInLatexFormat("degree.value", grade!);
@@ -32,7 +35,7 @@ public class EnrollSheetLatexBuilder(string templatesPath, string outputPath) : 
         content.ReplaceInLatexFormat("tutor.value", entity.tutor.name);
         content.ReplaceInLatexFormat("diseases.value", entity.diseases!);
         content.ReplaceInLatexFormat("phones.value", entity.tutor.phone);
-        content.ReplaceInLatexFormat("email.value", entity.tutor.email);
+        content.ReplaceInLatexFormat("tutor.email.value", entity.tutor.email);
         content.ReplaceInLatexFormat("religion.value", entity.religion);
         content.ReplaceInLatexFormat("address.value", entity.address);
         
@@ -40,6 +43,9 @@ public class EnrollSheetLatexBuilder(string templatesPath, string outputPath) : 
         content.ReplaceInLatexFormat("current.datetime.value", DateTime.UtcNow.toStringFull());
         content.ReplaceInLatexFormat("student.id.value", entity.studentId);
         content.ReplaceInLatexFormat("student.token.value", entity.accessToken);
+        
+        content.ReplaceInLatexFormat("school.name.value", schoolName);
+        content.ReplaceInLatexFormat("school.email.value", schoolEmail);
 
         setParents(content, entity.parents);
         setFile(content, entity.file!);
@@ -140,6 +146,18 @@ public class EnrollSheetLatexBuilder(string templatesPath, string outputPath) : 
         public Builder withAcademyStudent(model.academy.StudentEntity parameter)
         {
             latexBuilder.academyStudent = parameter;
+            return this;
+        }
+        
+        public Builder withSchoolName(string parameter)
+        {
+            latexBuilder.schoolName = parameter;
+            return this;
+        }
+        
+        public Builder withSchoolEmail(string parameter)
+        {
+            latexBuilder.schoolEmail = parameter;
             return this;
         }
     }

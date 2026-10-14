@@ -26,7 +26,7 @@ public class AcademicRecordLatexBuilder(string templatesPath, string outPath) : 
     {
         var content = new StringBuilder(value);
         
-        content.Replace("logo.value", $"{getImagesPath()}/Boletta500x500.png");
+        content.Replace("logo.value", $"{getImagesPath()}/logo.png");
         
         content.Replace("schoolyear.value", schoolyearLabel);
         

@@ -16,6 +16,9 @@
 
 \newcommand{\currentYear}{year.value}
 
+\newcommand{\schoolName}{school.name.value}
+\newcommand{\schoolEmail}{school.email.value}
+
 \pagestyle{fancy}
 \fancyhead[C]
 {
@@ -27,9 +30,9 @@
         \hspace{0.01\textwidth}
         \begin{minipage}[c][2.5cm]{0.6\textwidth}
             \centering
-            \textbf{\LARGE Colegio Bautista Libertad}\\[0.2cm]
+            \textbf{\LARGE \schoolName}\\[0.2cm]
             \textbf{\Large Lista de deudores \currentYear}\\
-            Contacto: soporte@cbl-edu.com
+            Contacto: \schoolEmail
         \end{minipage}
     }
 }

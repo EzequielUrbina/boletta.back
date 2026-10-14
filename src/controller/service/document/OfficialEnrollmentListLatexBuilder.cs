@@ -12,6 +12,10 @@ public class OfficialEnrollmentListLatexBuilder : LatexBuilder
     private List<TeacherEntity> teacherList { get; set; } = null!;
     private List<DegreeEntity> degreeList { get; set; } = null!;
     private DateTime now { get; set; }
+    
+    private string schoolName { get; set; } = null!;
+    private string schoolMail { get; set; } = null!;
+
 
     private OfficialEnrollmentListLatexBuilder(string templatesPath, string outPath) : base(templatesPath, outPath)
     {
@@ -23,8 +27,10 @@ public class OfficialEnrollmentListLatexBuilder : LatexBuilder
     protected override string updateContent(string value)
     {
         var content = new StringBuilder(value);
-        content.ReplaceInLatexFormat("logo.value", $"{getImagesPath()}/cbl-logo-wb.png");
+        content.ReplaceInLatexFormat("logo.value", $"{getImagesPath()}/logo.png");
         content.ReplaceInLatexFormat("year.value", DateTime.Today.Year.ToString());
+        content.ReplaceInLatexFormat("school.name.value", schoolName);
+        content.ReplaceInLatexFormat("school.email.value", schoolMail);
 
         var body = new StringBuilder();
         foreach (var item in degreeList.OrderBy(e => e.getTag()))
@@ -51,7 +57,7 @@ public class OfficialEnrollmentListLatexBuilder : LatexBuilder
         body.Append($"\\begin{{center}}\n\\textbf{{\\large {enrollment.label}}}\n\\end{{center}}\n");
         body.Append($"\\textbf{{Docente guía}}: \\aField{{{getTeacherName(enrollment.teacherId)}}}");
         body.Append($"\\hfill \\textbf{{Fecha}}: {now.toString()}\n");
-        body.Append($"\\footnotetext{{Impreso por wsmcbl el {now.toStringFull()}, {userName}.}}\n");
+        body.Append($"\\footnotetext{{Impreso por Boletta el {now.toStringFull()}, {userName}.}}\n");
 
         body.Append("\\begin{longtable}{| c || l || p{\\dimexpr\\textwidth-6cm\\relax} |}\n");
         body.Append("\\hline\\textbf{N\u00b0} & \\textbf{Código} & \\textbf{Nombre}\\\\\\hline\\hline\n");
@@ -119,6 +125,18 @@ public class OfficialEnrollmentListLatexBuilder : LatexBuilder
         public Builder withUserName(string parameter)
         {
             latexBuilder.userName = parameter;
+            return this;
+        }
+        
+        public Builder withSchoolName(string parameter)
+        {
+            latexBuilder.schoolName = parameter;
+            return this;
+        }
+        
+        public Builder withSchoolMail(string parameter)
+        {
+            latexBuilder.schoolMail = parameter;
             return this;
         }
     }

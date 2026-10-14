@@ -11,6 +11,10 @@ public class ProformaLatexBuilder(string templatesPath, string outPath) : LatexB
     private DegreeEntity degree { get; set; } = null!;
     private string? userAlias { get; set; }
     private string schoolyear { get; set; } = null!;
+    private string schoolName { get; set; } = null!;
+    private string schoolPhone { get; set; } = null!;
+    private string schoolEmail { get; set; } = null!;
+    private string schoolAddress { get; set; } = null!;
 
     private List<TariffEntity> tariffList { get; set; } = null!;
 
@@ -20,7 +24,7 @@ public class ProformaLatexBuilder(string templatesPath, string outPath) : LatexB
     {
         var content = new StringBuilder(value);
         
-        content.Replace("logo.value", $"{getImagesPath()}/cbl-logo-wb.png");
+        content.Replace("logo.value", $"{getImagesPath()}/logo.png");
         
         content.Replace("schoolyear.value", schoolyear);
         content.Replace("degree.value", degree.label.ToUpper());
@@ -35,6 +39,11 @@ public class ProformaLatexBuilder(string templatesPath, string outPath) : LatexB
         content.Replace("user.alias.value", userAlias);
         content.Replace("current.date.value", DateTime.UtcNow.toString("d 'de' MMMM 'de' yyyy"));
         content.Replace("current.datetime.value", DateTime.UtcNow.toStringFull());
+        
+        content.Replace("school.name.value", schoolName);
+        content.Replace("school.email.value", schoolEmail);
+        content.Replace("school.phone.value", schoolPhone);
+        content.Replace("school.address.value", schoolAddress);
 
         return content.ToString();
     }
@@ -90,6 +99,30 @@ public class ProformaLatexBuilder(string templatesPath, string outPath) : LatexB
         public Builder withTariffList(List<TariffEntity> parameter)
         {
             latexBuilder.tariffList = parameter;
+            return this;
+        }
+        
+        public Builder withSchoolName(string parameter)
+        {
+            latexBuilder.schoolName = parameter;
+            return this;
+        }
+        
+        public Builder withSchoolEmail(string parameter)
+        {
+            latexBuilder.schoolEmail = parameter;
+            return this;
+        }
+        
+        public Builder withSchoolPhone(string parameter)
+        {
+            latexBuilder.schoolPhone = parameter;
+            return this;
+        }
+        
+        public Builder withSchoolAddress(string parameter)
+        {
+            latexBuilder.schoolAddress = parameter;
             return this;
         }
     }

@@ -20,6 +20,11 @@ public class ReportCardLatexBuilder(string templatesPath, string outPath, string
     private string? userAlias { get; set; }
     private string schoolyear { get; set; } = null!;
     
+    private string schoolName { get; set; } = null!;
+    private string schoolPrincipal { get; set; } = null!;
+    private string schoolAddress { get; set; } = null!;
+
+    
     private readonly string _templateName = templateName;
     protected override string getTemplateName() => _templateName;
 
@@ -28,7 +33,7 @@ public class ReportCardLatexBuilder(string templatesPath, string outPath, string
         var content = new StringBuilder(value);
         
         // Reemplazos universales (Compatibles con ambos formatos)
-        content.Replace("logo.value", $"{getImagesPath()}/cbl-logo.png");
+        content.Replace("logo.value", $"{getImagesPath()}/logo.png");
         content.Replace("schoolyear.value", schoolyear);
         content.Replace("degree.value", degreeLabel);
         
@@ -41,7 +46,9 @@ public class ReportCardLatexBuilder(string templatesPath, string outPath, string
         if (_templateName == "grade-report")
         {
             content.Replace("mined.id.value", (student.student != null && !string.IsNullOrEmpty(student.student.minedId)) ? student.student.minedId : student.studentId);
-            content.Replace("principal.name.value", "Luz Azucena Cano"); 
+            content.Replace("principal.name.value", schoolPrincipal); 
+            content.Replace("school.name.value", schoolName); 
+            content.Replace("school.address.value", schoolAddress); 
             content.Replace("educational.level.value", educationLevel); 
             content.Replace("shift.value", "Matutino");
             content.Replace("department.value", "Managua");
@@ -203,6 +210,9 @@ public class ReportCardLatexBuilder(string templatesPath, string outPath, string
         private string? _userAlias;
         private string? _educationLevel;
         private string _schoolyear = null!;
+        private string _schoolName = null!;
+        private string _schoolAddress = null!;
+        private string _schoolPrincipal = null!;
 
         public Builder(string templatesPath, string outPath)
         {
@@ -232,6 +242,9 @@ public class ReportCardLatexBuilder(string templatesPath, string outPath, string
             latexBuilder.subjectAreaList = _subjectAreaList;
             latexBuilder.userAlias = _userAlias;
             latexBuilder.schoolyear = _schoolyear;
+            latexBuilder.schoolName = _schoolName;
+            latexBuilder.schoolAddress = _schoolAddress;
+            latexBuilder.schoolPrincipal = _schoolPrincipal;
 
             return latexBuilder;
         }
@@ -290,6 +303,24 @@ public class ReportCardLatexBuilder(string templatesPath, string outPath, string
         public Builder withEducationLevel(string parameter)
         {
             _educationLevel = parameter;
+            return this;
+        }
+        
+        public Builder withSchoolName(string parameter)
+        {
+            _schoolName = parameter;
+            return this;
+        }
+        
+        public Builder withSchoolAddress(string parameter)
+        {
+            _schoolAddress = parameter;
+            return this;
+        }
+        
+        public Builder withSchoolPrincipal(string parameter)
+        {
+            _schoolPrincipal = parameter;
             return this;
         }
     }

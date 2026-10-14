@@ -13,6 +13,8 @@
 \usepackage[left=1.5cm, right=1.5cm, top=4cm, bottom=2.5cm, headheight=2cm, headsep=1cm]{geometry}
 
 \newcommand{\schoolYear}{schoolyear.value}
+\newcommand{\schoolName}{school.name.value}
+\newcommand{\schoolAddress}{school.address.value}
 
 \pagestyle{fancy}
 \fancyhead[C]
@@ -25,7 +27,7 @@
         \hspace{0.01\textwidth}
         \begin{minipage}[c][2.5cm]{0.6\textwidth}
             \centering
-            \textbf{\LARGE Colegio Bautista Libertad}\\[0.2cm]
+            \textbf{\LARGE \schoolName}\\[0.2cm]
             \textbf{\normalsize REPORTE DE CALIFICACIONES FINALES \schoolYear}\\[0.1cm]
         \end{minipage}
     }
@@ -115,5 +117,5 @@
         \end{tabular}
     \end{center}
 
-    \footnotetext{Dirección: Entrada norte Centro Comercial Managua 100 mtr arriba, 1C Sur y 30 varas arriba. \secretaryName.}
+    \footnotetext{Dirección: \schoolAddress. \secretaryName.}
 \end{document}

@@ -24,6 +24,11 @@ public class DocumentMaker(DaoFactory daoFactory) : PdfMaker
         var educativonLevel = await daoFactory.degreeDao!.getByEnrollmentId(enrollmentId);
         var schoolyear = await daoFactory.schoolyearDao!.getCurrent();
         var partialList = await daoFactory.partialDao!.getListForCurrentSchoolyear();
+        
+        var schoolPrincipal = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_PRINCIPAL") ?? "N/A";
+        var schoolName = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_NAME") ?? "N/A";
+        var schoolAddress = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_ADDRESS") ?? "N/A";
+
 
         var currentPartial = partialList.LastOrDefault();
         if (currentPartial == null)
@@ -72,7 +77,7 @@ public class DocumentMaker(DaoFactory daoFactory) : PdfMaker
 
                 var latexBuilder = new ReportCardLatexBuilder.Builder(resource, studentSpecificFolder)
                     .withTemplate("grade-report") // <-- Forzamos el uso de tu nuevo diseño .tex
-                    .withStudent(studentWithAllGrades) // <-- Usamos el objeto en memoria (Sin pegarle a la DB)
+                    .withStudent(studentWithAllGrades)
                     .withTeacher(teacher)
                     .withUserAlias(userAlias)
                     .withDegree(enrollment!.label)
@@ -81,6 +86,9 @@ public class DocumentMaker(DaoFactory daoFactory) : PdfMaker
                     .withSchoolyear(schoolyear.label)
                     .withSubjectAreaList(allSubjectAreas)
                     .withSubjectList(allSubjects)
+                    .withSchoolName(schoolName)
+                    .withSchoolAddress(schoolAddress)
+                    .withSchoolPrincipal(schoolPrincipal)
                     .build();
 
                 string studentOutPath = latexBuilder.getOutPath();
@@ -205,6 +213,9 @@ public class DocumentMaker(DaoFactory daoFactory) : PdfMaker
         var academyStudent = await daoFactory.academyStudentDao!.getById(studentId);
         var enrollment = await daoFactory.enrollmentDao!.getByStudentId(student.studentId!);
         var schoolyear = await daoFactory.schoolyearDao!.getById(academyStudent!.schoolyearId);
+        
+        var schoolName = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_NAME") ?? "N/A";
+        var schoolEmail = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_EMAIL") ?? "N/A";
 
         var latexBuilder = new EnrollSheetLatexBuilder.Builder(resource, $"{resource}/out/enroll")
             .withStudent(student)
@@ -212,6 +223,8 @@ public class DocumentMaker(DaoFactory daoFactory) : PdfMaker
             .withGrade(enrollment.label)
             .withSchoolyear(schoolyear?.label)
             .withUserAlias(userAlias)
+            .withSchoolName(schoolName)
+            .withSchoolEmail(schoolEmail)
             .build();
 
         setLatexBuilder(latexBuilder);
@@ -221,7 +234,6 @@ public class DocumentMaker(DaoFactory daoFactory) : PdfMaker
     public async Task<byte[]> getInvoiceDocument(string transactionId)
     {
         var transaction = await daoFactory.transactionDao!.getById(transactionId);
-
         var cashier = await daoFactory.cashierDao!.getById(transaction!.cashierId);
         if (cashier is null)
         {
@@ -233,6 +245,12 @@ public class DocumentMaker(DaoFactory daoFactory) : PdfMaker
         var exchangeRate = await daoFactory.exchangeRateDao!.getLastRate();
         var generalBalance = await daoFactory.debtHistoryDao!.getGeneralBalance(transaction.studentId);
         secretaryStudent.accessToken ??= string.Empty;
+        
+        var schoolBusinessName = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_BUSINESS_NAME") ?? "N/A";
+        var schoolName = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_NAME") ?? "N/A";
+        var schoolRuc = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_RUC") ?? "N/A";
+        var schoolAddress = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_ADDRESS") ?? "N/A";
+        var schoolPhone = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_PHONE") ?? "N/A";
 
         var latexBuilder = new InvoiceLatexBuilder.Builder(resource, $"{resource}/out/invoice")
             .withStudent(student)
@@ -243,6 +261,11 @@ public class DocumentMaker(DaoFactory daoFactory) : PdfMaker
             .withNumber(transaction.number)
             .withSeries("A")
             .withExchangeRate(exchangeRate.value)
+            .withSchoolName(schoolName)
+            .withSchoolBusnissName(schoolBusinessName)
+            .withSchoolRuc(schoolRuc)
+            .withSchoolAddress(schoolAddress)
+            .withSchoolPhone(schoolPhone)
             .build();
 
         setLatexBuilder(latexBuilder);
@@ -255,11 +278,16 @@ public class DocumentMaker(DaoFactory daoFactory) : PdfMaker
 
         var degreeList = await daoFactory.degreeDao!.getListForSchoolyearId(schoolyear.id!, true);
         var teacherList = await daoFactory.teacherDao!.getAll();
+        
+        var schoolName = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_NAME") ?? "N/A";
+        var schoolMail = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_EMAIL") ?? "N/A";
 
         var latexBuilder = new OfficialEnrollmentListLatexBuilder.Builder(resource, $"{resource}/out/enrollments")
             .withDegreeList(degreeList)
             .withTeacherList(teacherList)
             .withUserName(userAlias)
+            .withSchoolName(schoolName)
+            .withSchoolMail(schoolMail)
             .build();
 
         setLatexBuilder(latexBuilder);
@@ -270,11 +298,16 @@ public class DocumentMaker(DaoFactory daoFactory) : PdfMaker
     {
         var studentList = await daoFactory.accountingStudentDao!.getDebtorStudentList();
         var degreeList = await daoFactory.degreeDao!.getValidListForNewOrCurrentSchoolyear();
+        
+        var schoolName = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_NAME") ?? "N/A";
+        var schoolEmail = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_EMAIL") ?? "soporte@boletta.app";
 
         var latexBuilder = new DebtorReportLatexBuilder.Builder(resource, $"{resource}/out/debtor")
             .withStudentList(studentList)
             .withDegreeList(degreeList)
             .withUserName(userAlias)
+            .withSchoolName(schoolName)
+            .withSchoolEmail(schoolEmail)
             .build();
 
         setLatexBuilder(latexBuilder);
@@ -292,12 +325,23 @@ public class DocumentMaker(DaoFactory daoFactory) : PdfMaker
         var enrollment = await daoFactory.enrollmentDao!.getById(student.enrollmentId!);
         var degree = await daoFactory.degreeDao!.getById(enrollment!.degreeId);
         var schoolyear = await daoFactory.schoolyearDao!.getCurrent();
+        
+        var schoolName = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_NAME") ?? "N/A";
+        var schoolPhone = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_PHONE") ?? "N/A";
+        var schoolEmail = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_EMAIL") ?? "soporte@boletta.app";
+        var schoolAddress = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_ADDRESS") ?? "N/A";
+        var schoolSecretary = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_SECRETARY") ?? "N/A";
 
         var latexBuilder = new ActiveCertificateLatexBuilder.Builder(resource, $"{resource}/out/active")
             .withStudent(student)
             .withUserAlias(userAlias)
             .withEnrollment(enrollment.label)
             .withLevel(degree!.educationalLevel)
+            .withSchoolName(schoolName)
+            .withSchoolPhone(schoolPhone)
+            .withSchoolAddress(schoolAddress)
+            .withSchoolMail(schoolEmail)
+            .withSchoolSecretary(schoolSecretary)
             .withSchoolyear(schoolyear.label)
             .build();
 
@@ -317,11 +361,22 @@ public class DocumentMaker(DaoFactory daoFactory) : PdfMaker
     {
         var degree = await daoFactory.degreeDao!.getById(degreeId);
         var schoolyear = await daoFactory.schoolyearDao!.getCurrent();
-
+        var schoolyearList = await daoFactory.schoolyearDao!.getAll();
+        var latestSchoolyear = schoolyearList
+            .OrderByDescending(o => o.id)
+            .FirstOrDefault();
+        
         var tariffList = await daoFactory.tariffDao!.getAll();
         tariffList = tariffList
-            .Where(e => DegreeDataEntity.getLevelName(e.educationalLevel) == degree!.educationalLevel)
-            .OrderBy(e => e.dueDate).ToList();
+            .Where(e => degree != null && DegreeDataEntity.getLevelName(e.educationalLevel) == degree.educationalLevel)
+            .Where(a => latestSchoolyear != null && a.schoolyearId == latestSchoolyear.id)
+            .OrderBy(e => e.dueDate)
+            .ToList();  
+        
+        var schoolName = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_NAME") ?? "N/A";
+        var schoolPhone = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_PHONE") ?? "N/A";
+        var schoolEmail = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_EMAIL") ?? "soporte@boletta.app";
+        var schoolAddress = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_ADDRESS") ?? "N/A";
 
         var latexBuilder = new ProformaLatexBuilder.Builder(resource, $"{resource}/out/proforma")
             .withStudent(name)
@@ -329,6 +384,10 @@ public class DocumentMaker(DaoFactory daoFactory) : PdfMaker
             .withDegree(degree!)
             .withSchoolyear(schoolyear.label)
             .withTariffList(tariffList)
+            .withSchoolName(schoolName)
+            .withSchoolPhone(schoolPhone)
+            .withSchoolEmail(schoolEmail)
+            .withSchoolAddress(schoolAddress)
             .build();
 
         setLatexBuilder(latexBuilder);
@@ -340,16 +399,16 @@ public class DocumentMaker(DaoFactory daoFactory) : PdfMaker
         var student = await daoFactory.accountingStudentDao!.getFullById(studentId);
         var schoolyear = await daoFactory.schoolyearDao!.getCurrent();
         
-        var schoolName = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_NAME") ?? "Colegio De Prueba";
-        var schoolPhone = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_PHONE") ?? "77665500";
-        var schoolEmail = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_EMAIL") ?? "Ventas@boletta.app";
+        var schoolName = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_NAME") ?? "N/A";
+        var schoolPhone = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_PHONE") ?? "N/A";
+        var schoolEmail = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_EMAIL") ?? "soporte@boletta.app";
 
 
         var latexBuilder = new AccountStatementLatexBuilder.Builder(resource, $"{resource}/out/statement")
             .withStudent(student)
             .withUserAlias(userAlias)
             .withSchoolyear(schoolyear)
-            .whitSchoolEmail(schoolName)
+            .whitSchoolEmail(schoolEmail)
             .whitSchoolPhone(schoolPhone)
             .whitSchoolName(schoolName)
             .withSchoolyearList(await daoFactory.schoolyearDao!.getAll())

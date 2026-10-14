@@ -10,6 +10,8 @@ public class DebtorReportLatexBuilder : LatexBuilder
 {
     private DateTime now { get; set; }
     private string userName { get; set; } = null!;
+    private string schoolName { get; set; } = null!;
+    private string schoolEmail { get; set; } = null!;
     private List<DebtorStudentView> studentList { get; set; } = null!;
     private List<DegreeEntity> degreeList { get; set; } = null!;
 
@@ -25,9 +27,11 @@ public class DebtorReportLatexBuilder : LatexBuilder
     protected override string updateContent(string value)
     {
         var content = new StringBuilder(value);
-        content.ReplaceInLatexFormat("logo.value", $"{getImagesPath()}/cbl-logo-wb.png");
+        content.ReplaceInLatexFormat("logo.value", $"{getImagesPath()}/logo.png");
         content.ReplaceInLatexFormat("year.value", DateTime.Today.Year.ToString());
         content.ReplaceInLatexFormat("today.value", now.toString());
+        content.ReplaceInLatexFormat("school.name.value", schoolName);
+        content.ReplaceInLatexFormat("school.email.value", schoolEmail);
         content.Replace("body.value", getDegreeContent());
 
         return content.ToString();
@@ -77,7 +81,7 @@ public class DebtorReportLatexBuilder : LatexBuilder
         body.Append(getFromOtherSchoolyear());
         
         body.Append($"\\hfill\\textbf{{Super total:}} C\\$ {getTotal(0):N2}");
-        body.Append($"\\footnotetext{{Impreso por wsmcbl el {now.toStringFull()}, {userName}.}}\n");
+        body.Append($"\\footnotetext{{Impreso por Boletta el {now.toStringFull()}, {userName}.}}\n");
 
         return body.ToString();
     }
@@ -143,6 +147,18 @@ public class DebtorReportLatexBuilder : LatexBuilder
         public Builder withUserName(string parameter)
         {
             latexBuilder.userName = parameter;
+            return this;
+        }
+        
+        public Builder withSchoolName(string parameter)
+        {
+            latexBuilder.schoolName = parameter;
+            return this;
+        }
+
+        public Builder withSchoolEmail(string parameter)
+        {
+            latexBuilder.schoolEmail = parameter;
             return this;
         }
     }

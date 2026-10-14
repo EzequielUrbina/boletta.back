@@ -14,6 +14,13 @@ public class InvoiceLatexBuilder(string templatesPath, string outPath) : LatexBu
     private string series = null!;
     private string exchangeRate = null!;
     private string password = string.Empty;
+    
+    private string schoolName = null!;
+    private string schoolBusinessName = null!;
+    private string schoolRuc = null!;
+    private string schoolPhone = null!;
+    private string schoolAddress = null!;
+
 
     protected override string getTemplateName() => "invoice";
 
@@ -36,6 +43,13 @@ public class InvoiceLatexBuilder(string templatesPath, string outPath) : LatexBu
         content.ReplaceInLatexFormat("datetime.value", transaction.date.toStringFull(false));
         content.ReplaceInLatexFormat("exchange.rate.value", exchangeRate);
         content.ReplaceInLatexFormat("general.balance.value", getGeneralBalance());
+        
+        content.ReplaceInLatexFormat("school.name", schoolName);
+        content.ReplaceInLatexFormat("business.name", schoolBusinessName);
+        content.ReplaceInLatexFormat("school.ruc", schoolRuc);
+        content.ReplaceInLatexFormat("school.phone", schoolPhone);
+        content.ReplaceInLatexFormat("school.address", schoolAddress);
+
 
         return content.ToString();
     }
@@ -160,6 +174,36 @@ public class InvoiceLatexBuilder(string templatesPath, string outPath) : LatexBu
         public Builder withExchangeRate(decimal parameter)
         {
             latexBuilder.exchangeRate = $"{parameter:F2}";
+            return this;
+        }
+        
+        public Builder withSchoolName(string parameter)
+        {
+            latexBuilder.schoolName = parameter;
+            return this;
+        }
+        
+        public Builder withSchoolRuc(string parameter)
+        {
+            latexBuilder.schoolRuc = parameter;
+            return this;
+        }
+        
+        public Builder withSchoolPhone(string parameter)
+        {
+            latexBuilder.schoolPhone = parameter;
+            return this;
+        }
+        
+        public Builder withSchoolBusnissName(string parameter)
+        {
+            latexBuilder.schoolBusinessName = parameter;
+            return this;
+        }
+        
+        public Builder withSchoolAddress(string parameter)
+        {
+            latexBuilder.schoolAddress = parameter;
             return this;
         }
     }

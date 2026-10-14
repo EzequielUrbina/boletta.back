@@ -14,6 +14,9 @@
 
 \newcommand{\schoolYear}{schoolyear.value}
 
+\newcommand{\schoolName}{school.name.value}
+\newcommand{\schoolEmail}{school.email.value}
+
 \pagestyle{fancy}
 \fancyhead[C]
 {
@@ -25,9 +28,9 @@
         \hspace{0.01\textwidth}
         \begin{minipage}[c][2.4cm]{0.6\textwidth}
             \centering
-            \textbf{\LARGE Colegio Bautista Libertad}\\[0.2cm]
+            \textbf{\LARGE \schoolName}\\[0.2cm]
             \textbf{\Large Hoja de matrícula \schoolYear}\\[0.1cm]
-            Contacto: soporte@cbl-edu.com
+            Contacto: \schoolEmail
         \end{minipage}
     }
 }
@@ -53,7 +56,7 @@
 \newcommand{\diseases}{diseases.value}
 \newcommand{\tutor}{tutor.value}
 \newcommand{\phones}{phones.value}
-\newcommand{\email}{email.value}
+\newcommand{\email}{tutor.email.value}
 \newcommand{\fatherName}{father.name.value}
 \newcommand{\fatherIdcard}{father.idcard.value}
 \newcommand{\fatherOccupation}{father.occupation.value}
@@ -86,7 +89,7 @@
         \textbf{Fecha de Nac.:} \aField{\studentBirthday}\\
         \textbf{Matriculado en:} \aField{\degree}\\
         \textbf{Repitente:} \aField{\isRepeating}\\
-        \textbf{Mined Id:} \aField{\minedId}
+        \textbf{Código:} \aField{\minedId}
     \end{minipage}
     \hfill
     \begin{minipage}[t]{0.49\textwidth}
@@ -142,7 +145,7 @@
         \end{tabular}
     \end{table}
     \textbf{Compromiso de padres y estudiantes}\\
-    Me comprometo a seguir los principios bíblicos del Colegio Bautista Libertad, así como cumplir con los siguientes aspectos:
+    Me comprometo a seguir los principios bíblicos del \schoolName,\ así como cumplir con los siguientes aspectos:
     \begin{itemize}
         \item Cumplir con las obligaciones de colegiaturas a más tardar el 28 de cada mes. De lo contrario \textbf{pagaré} el 10\% de mora.
         \item Pagar el treceavo mes durante el año escolar, pudiendo pagarlo por cuotas.
@@ -150,7 +153,6 @@
         \item Asistir al centro escolar decorosamente vestido.
         \item Conocer las faltas (leves, graves y muy graves) y deberes del estudiante.
         \item Mi hijo cumplirá con las exigencias académicas de la institución.
-        \item Mi hijo asistirá sin excepciones una vez al mes a la Escuela Bíblica Dominical.
         \item Mi hijo portará su biblia todos los días que asista al colegio.
         \item Mi hijo no asistirá a clases con adornos exagerados, prendas de valor como joyas o dispositivos electrónicos, así como arreglos estéticos exuberantes.
         \item Estar de acuerdo que el colegio \textbf{no se responsabiliza} por la pérdida de prendas cuyo uso está prohibido.
@@ -169,7 +171,7 @@
         Firma del responsable
     \end{center}
     \vfill
-    \footnotetext{Impreso por wsmcbl el \currentDatetime, \secretaryName.}
+    \footnotetext{Impreso por Boletta el \currentDatetime, \secretaryName.}
     
     
     \newpage
@@ -183,20 +185,10 @@
     \textbf{Código:} \studentId\\
     \textbf{Contraseña:} \studentToken\\
 
-    Para consultar las calificaciones del estudiante visite nuestro sitio web
-    \begin{center}
-        www.cbl-edu.com/online-grades
-    \end{center}
-    e ingrese el código y contraseña.
+    Para consultar las calificaciones del estudiante visite el sitio web e ingrese el código y contraseña.
     Tenga presente que esta opción estará disponible luego de las entregas de calificaciones, lo cual se notificará por los medios pertinentes.
     
-    Evite compartir esta información y en caso de perdidas o dudas puede enviarnos un correo a soporte@cbl-edu.com o bien visitarnos en nuestras instalaciones.
-
-    Para más información sobres los derechos y deberes consulte el \textbf{reglamento interno del Colegio Bautista Libertad}
-    visitando nuestro sitio web
-    \begin{center}
-        www.cbl-edu.com/regulation
-    \end{center}
+    Evite compartir esta información y en caso de perdidas o dudas puede enviarnos un correo a \schoolEmail\ o bien visitarnos en nuestras instalaciones.
 
     \vspace{1cm}
     \begin{center}
@@ -204,5 +196,5 @@
         \scriptsize{--- Última línea ---}
     \end{center}
     \vfill
-    \footnotetext{Impreso por wsmcbl el \currentDatetime, \secretaryName.}
+    \footnotetext{Impreso por Boletta el \currentDatetime, \secretaryName.}
 \end{document}

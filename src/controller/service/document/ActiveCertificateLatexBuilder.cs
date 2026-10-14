@@ -11,6 +11,13 @@ public class ActiveCertificateLatexBuilder(string templatesPath, string outPath)
     private string level { get; set; } = null!;
     private string? userAlias { get; set; }
     private string schoolyear { get; set; } = null!;
+    
+    private string schoolName { get; set; } = null!;
+    private string schoolEmail { get; set; } = null!;
+    private string schoolPhone { get; set; } = null!;
+    private string schoolAddress { get; set; } = null!;
+    private string schoolSecretary { get; set; } = null!;
+
 
     protected override string getTemplateName() => "active-certificate";
 
@@ -18,7 +25,7 @@ public class ActiveCertificateLatexBuilder(string templatesPath, string outPath)
     {
         var content = new StringBuilder(value);
         
-        content.Replace("logo.value", $"{getImagesPath()}/cbl-logo-wb.png");
+        content.Replace("logo.value", $"{getImagesPath()}/logo.png");
         
         content.Replace("schoolyear.value", schoolyear);
         content.Replace("enrollment.value", enrollmentLabel.ToUpper());
@@ -31,6 +38,12 @@ public class ActiveCertificateLatexBuilder(string templatesPath, string outPath)
         content.Replace("user.alias.value", userAlias);
         content.Replace("current.date.value", DateTime.UtcNow.toString("d 'de' MMMM 'de' yyyy"));
         content.Replace("current.datetime.value", DateTime.UtcNow.toStringFull());
+        
+        content.Replace("school.name.value", schoolName);
+        content.Replace("school.email.value", schoolEmail);
+        content.Replace("school.phone.value", schoolPhone);
+        content.Replace("school.address.value", schoolAddress);
+        content.Replace("school.secretary.value", schoolSecretary);
 
         return content.ToString();
     }
@@ -67,6 +80,36 @@ public class ActiveCertificateLatexBuilder(string templatesPath, string outPath)
         public Builder withSchoolyear(string parameter)
         {
             latexBuilder.schoolyear = parameter;
+            return this;
+        }
+        
+        public Builder withSchoolName(string parameter)
+        {
+            latexBuilder.schoolName = parameter;
+            return this;
+        }
+        
+        public Builder withSchoolMail(string parameter)
+        {
+            latexBuilder.schoolEmail = parameter;
+            return this;
+        }
+        
+        public Builder withSchoolPhone(string parameter)
+        {
+            latexBuilder.schoolPhone = parameter;
+            return this;
+        }
+        
+        public Builder withSchoolAddress(string parameter)
+        {
+            latexBuilder.schoolAddress = parameter;
+            return this;
+        }
+        
+        public Builder withSchoolSecretary(string parameter)
+        {
+            latexBuilder.schoolSecretary = parameter;
             return this;
         }
         

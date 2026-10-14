@@ -26,10 +26,9 @@
         \hspace{0.01\textwidth}
         \begin{minipage}[c][2.5cm]{0.6\textwidth}
             \centering
-            \textbf{\LARGE Colegio Bautista Libertad}\\[0.2cm]
-            \textbf{\large Amor - Esfuerzo - Disciplina}\\[0.1cm]
-            Contacto: secretaria@cbl-edu.com\\
-            Teléfono: 2270-5587
+            \textbf{\LARGE \schoolName}\\[0.2cm]
+            Contacto: \schoolEmail\\
+            Teléfono: \schoolPhone
         \end{minipage}
     }
 }
@@ -54,6 +53,10 @@
 \newcommand{\totalAmount}{total.value}
 
 \newcommand{\secretaryName}{secretary.name.value}
+\newcommand{\schoolName}{school.name.value}
+\newcommand{\schoolEmail}{school.email.value}
+\newcommand{\schoolPhone}{school.phone.value}
+\newcommand{\schoolAddress}{school.address.value}
 \newcommand{\userAlias}{user.alias.value}
 \newcommand{\currentDatetime}{current.datetime.value}
 \makeatletter
@@ -61,14 +64,14 @@
 \makeatother
 
 \AddToShipoutPictureBG*{
-    \put(\LenToUnit{2.5cm},\LenToUnit{45}){\footnotesize Impreso por wsmcbl el \currentDatetime, \userAlias.}
+    \put(\LenToUnit{2.5cm},\LenToUnit{45}){\footnotesize Impreso por Boletta el \currentDatetime, \userAlias.}
 }
 
 \begin{document}
     \begin{center}
         \underline{\textbf{\Large Proforma}}
     \end{center}
-    La suscrita Secretaria del Colegio Bautista Libertad extiende la presente proforma al estudiante \textbf{\studentName},
+    La Secretaría del \schoolName\ extiende la presente proforma al estudiante \textbf{\studentName},
     correspondiente al \textbf{\degreeName}~del nivel \levelName~para el año lectivo \schoolYear, detallando a continuación
     los costos arancelarios asociados:
     \begin{table}[H]
@@ -92,5 +95,5 @@
     \end{center}
     \vfill
     \textbf{Nota:} Este documento no es válido sin firma ni sello.\\
-    \textbf{Dirección:} Entrada Norte Centro Comercial Managua, 1 cuadra al oeste, 1/2 cuadra al sur. Managua, Nicaragua.
+    \textbf{Dirección:} \schoolAddress.
 \end{document}
