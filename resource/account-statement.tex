@@ -17,6 +17,10 @@
 
 \usepackage{etoolbox}
 
+\newcommand{\schoolName}{school.name.value}
+\newcommand{\schoolEmail}{school.email.value}
+\newcommand{\schoolPhone}{school.phone.value}
+
 \pagestyle{fancy}
 \fancyhead[C]
 {
@@ -28,10 +32,9 @@
         \hspace{0.01\textwidth}
         \begin{minipage}[c][2.5cm]{0.6\textwidth}
             \centering
-            \textbf{\LARGE Colegio Bautista Libertad}\\[0.2cm]
-            \textbf{\large Amor - Esfuerzo - Disciplina}\\[0.1cm]
-            Contacto: secretaria@cbl-edu.com\\
-            Teléfono: 2270-5587
+            \textbf{\LARGE \schoolName}\\[0.2cm]
+            Contacto: \schoolEmail \\
+            Teléfono: \schoolPhone
         \end{minipage}
     }
 }
@@ -64,7 +67,7 @@
 \makeatother
 
 \AddToShipoutPictureBG*{
-    \put(\LenToUnit{2.2cm},\LenToUnit{45}){\footnotesize Impreso por wsmcbl el \currentDatetime, \userAlias.}
+    \put(\LenToUnit{2.2cm},\LenToUnit{45}){\footnotesize Impreso por Boletta el \currentDatetime, \userAlias.}
 }
 
 \newtoggle{showTable}

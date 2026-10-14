@@ -339,11 +339,19 @@ public class DocumentMaker(DaoFactory daoFactory) : PdfMaker
     {
         var student = await daoFactory.accountingStudentDao!.getFullById(studentId);
         var schoolyear = await daoFactory.schoolyearDao!.getCurrent();
+        
+        var schoolName = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_NAME") ?? "Colegio De Prueba";
+        var schoolPhone = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_PHONE") ?? "77665500";
+        var schoolEmail = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_EMAIL") ?? "Ventas@boletta.app";
+
 
         var latexBuilder = new AccountStatementLatexBuilder.Builder(resource, $"{resource}/out/statement")
             .withStudent(student)
             .withUserAlias(userAlias)
             .withSchoolyear(schoolyear)
+            .whitSchoolEmail(schoolName)
+            .whitSchoolPhone(schoolPhone)
+            .whitSchoolName(schoolName)
             .withSchoolyearList(await daoFactory.schoolyearDao!.getAll())
             .build();
 

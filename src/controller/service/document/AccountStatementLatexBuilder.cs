@@ -12,6 +12,9 @@ public class AccountStatementLatexBuilder(string templatesPath, string outPath) 
     private string userAlias { get; set; } = null!;
     private SchoolyearEntity schoolyear { get; set; } = null!;
     private List<SchoolyearEntity> schoolyearList { get; set; } = null!;
+    private string SchoolName { get; set; } = null!;
+    private string SchoolEmail { get; set; } = null!;
+    private string SchoolPhone { get; set; } = null!;
     
     protected override string getTemplateName() => "account-statement";
 
@@ -19,7 +22,7 @@ public class AccountStatementLatexBuilder(string templatesPath, string outPath) 
     {
         var content = new StringBuilder(value);
         
-        content.Replace("logo.value", $"{getImagesPath()}/cbl-logo-wb.png");
+        content.Replace("logo.value", $"{getImagesPath()}/logo.png");
         
         content.Replace("schoolyear.value", schoolyear.label);
         content.Replace("level.value", DegreeDataEntity.getLevelName(student.educationalLevel));
@@ -35,6 +38,10 @@ public class AccountStatementLatexBuilder(string templatesPath, string outPath) 
         content.Replace("user.alias.value", userAlias);
         content.Replace("current.datetime.value", DateTime.UtcNow.toStringFull());
         content.Replace("current.date.value", DateTime.UtcNow.toString());
+
+        content.Replace("school.phone.value", SchoolPhone);
+        content.Replace("school.email.value", SchoolEmail);
+        content.Replace("school.name.value", SchoolName);
 
         return content.ToString();
     }
@@ -123,6 +130,24 @@ public class AccountStatementLatexBuilder(string templatesPath, string outPath) 
         public Builder withSchoolyearList(List<SchoolyearEntity> parameter)
         {
             latexBuilder.schoolyearList = parameter;
+            return this;
+        }
+        
+        public Builder whitSchoolName(string parameter)
+        {
+            latexBuilder.SchoolName = parameter;
+            return this;
+        }
+        
+        public Builder whitSchoolEmail(string parameter)
+        {
+            latexBuilder.SchoolEmail = parameter;
+            return this;
+        }
+        
+        public Builder whitSchoolPhone(string parameter)
+        {
+            latexBuilder.SchoolPhone = parameter;
             return this;
         }
     }

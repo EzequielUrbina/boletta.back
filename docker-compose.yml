@@ -33,6 +33,7 @@ services:
       - APP_URL=${APP_URL}
       - BOLETTA_SCHOOL_NAME=${BOLETTA_SCHOOL_NAME}
       - BOLETTA_SCHOOL_EMAIL=${BOLETTA_SCHOOL_EMAIL}
+      - BOLETTA_SCHOOL_EMAIL=${BOLETTA_SCHOOL_PHONE}
     ports:
       - '4000:8080'
     depends_on:
