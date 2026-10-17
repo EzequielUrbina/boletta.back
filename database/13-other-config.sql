@@ -11,33 +11,31 @@ create table if not exists Config.Multimedia
 
 
 -- Transaction_Report_View view ---
-CREATE VIEW accounting.transaction_report_view AS
-SELECT t.transactionId,
+CREATE OR REPLACE VIEW accounting.transaction_report_view
+ AS
+SELECT t.transactionid,
        t.number,
-       s.studentId,
-       concat_ws(' ', s.name, s.secondname, s.surname, s.secondsurname) as studentName,
+       s.studentid,
+       concat_ws(' '::text, s.name, s.secondname, s.surname, s.secondsurname) AS studentname,
        t.total,
-       t.date as dateTime,
+       t.date AS datetime,
        t.isvalid,
-       e.label as enrollmentLabel,
+       e.label AS enrollmentlabel,
        CASE
-           WHEN COUNT(DISTINCT ta.typeId) = 1 THEN MAX(ta.typeId)
+           WHEN count(DISTINCT ta.typeid) = 1 THEN max(ta.typeid)
            ELSE 0
-           END
-           AS type
+           END AS type
 FROM accounting.transaction t
-         JOIN
-     secretary.student s ON t.studentId = s.studentId
-         LEFT JOIN
-     academy.student asd ON s.studentId = asd.studentId
-         LEFT JOIN
-     academy.enrollment e ON asd.enrollmentId = e.enrollmentId
-         LEFT JOIN
-     accounting.transaction_tariff tt ON t.transactionId = tt.transactionId
-         LEFT JOIN
-     accounting.tariff ta ON tt.tariffId = ta.tariffId
-GROUP BY t.transactionId, t.number, s.studentId, s.name, s.secondname, s.surname, s.secondsurname, t.total, t.date,
-         e.label, t.isvalid;
+         JOIN secretary.student s ON t.studentid::text = s.studentid::text
+     LEFT JOIN LATERAL ( SELECT e_1.label
+           FROM academy.student asd
+             JOIN academy.enrollment e_1 ON e_1.enrollmentid::text = asd.enrollmentid::text
+          WHERE asd.studentid::text = s.studentid::text
+          ORDER BY e_1.enrollmentid DESC
+         LIMIT 1) e ON true
+    LEFT JOIN accounting.transaction_tariff tt ON t.transactionid::text = tt.transactionid::text
+    LEFT JOIN accounting.tariff ta ON tt.tariffid = ta.tariffid
+GROUP BY t.transactionid, t.number, s.studentid, s.name, s.secondname, s.surname, s.secondsurname, t.total, t.date, e.label, t.isvalid;
 
 
 --- Student_View View ---
@@ -161,16 +159,15 @@ FROM academy.grade g
 
 
 -- grade_average_view view
-CREATE VIEW academy.grade_average_view AS
-SELECT row_number()            OVER (ORDER BY gv.studentid) AS id, gv.studentid,
+SELECT row_number() OVER (ORDER BY gv.studentid) AS id, gv.studentid,
        gv.partialid,
        gv.enrollmentid,
        gv.schoolyearid,
        gv.partial,
-       AVG(gv.grade)        AS grade,
-       AVG(gv.conductgrade) AS conductgrade
+       (sum(gv.grade) + cd.conductgrade) / (count(gv.grade) + 1)::numeric AS grade, cd.conductgrade
 FROM academy.grade_view gv
-GROUP BY gv.studentid, gv.partialid, gv.enrollmentid, gv.schoolyearid, gv.partial;
+LEFT JOIN academy.conduct_grade_average_view cd ON cd.studentid::text = gv.studentid::text AND cd.partialid = gv.partialid AND cd.enrollmentid::text = gv.enrollmentid::text AND cd.schoolyearid::text = gv.schoolyearid::text
+GROUP BY gv.studentid, gv.partialid, gv.enrollmentid, gv.schoolyearid, gv.partial, cd.conductgrade;
 
 -- subject_graded_view view
 CREATE VIEW academy.subject_graded_view as
