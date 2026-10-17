@@ -157,13 +157,6 @@ FROM academy.grade g
          JOIN academy.partial p ON p.partialid = sp.partialid
          JOIN academy.enrollment e ON e.enrollmentid = sp.enrollmentid;
 
--- conduct_grade_average_view view
-CREATE VIEW academy.conduct_grade_average_view AS
-SELECT gv.studentid, gv.partialid, gv.enrollmentid, gv.schoolyearid, AVG(gv.conductgrade) as conductgrade
-FROM academy.grade_view gv
-GROUP BY gv.studentid, gv.partialid, gv.enrollmentid, gv.schoolyearid, gv.partial;
-
-
 -- grade_average_view view
 CREATE OR REPLACE VIEW academy.grade_average_view
  AS
