@@ -5,7 +5,13 @@ namespace wsmcbl.src.controller.service.sheet;
 
 public class TransactionInvoiceSheetBuilder : SheetBuilder
 {
-    private readonly List<TransactionInvoiceView> _transactions;
+    private List<TransactionInvoiceView> _transactions { get; set; } = [];
+    private string _userAlias { get; set; } = string.Empty;
+
+    public TransactionInvoiceSheetBuilder()
+    {
+        setColumnQuantity();
+    }
 
     public TransactionInvoiceSheetBuilder(List<TransactionInvoiceView> transactions)
     {
@@ -15,77 +21,171 @@ public class TransactionInvoiceSheetBuilder : SheetBuilder
 
     protected override void setColumnQuantity()
     {
-        // Cantidad de columnas (B, C, D, E, F, G, H) = Total 7 columnas
-        columnQuantity = 7; 
+        // Cantidad de columnas (A, B, C, D, E, F, G, H) = Total 8 columnas
+        columnQuantity = 8;
     }
 
     public override byte[] getSpreadSheet()
     {
-        using (var workbook = new XLWorkbook())
+        using var workbook = new XLWorkbook();
+        initWorksheet(workbook, "Transacciones");
+
+        const int titleRow = 2;
+        const int headerRow = 4;
+
+        setTitle(titleRow);
+        setHeader(headerRow);
+
+        int currentRow = headerRow + 1;
+        int firstDataRow = currentRow;
+
+        foreach (var item in _transactions)
         {
-            // Inicializar la hoja con el nombre "Transacciones"
-            initWorksheet(workbook, "Transacciones");
+            setRowData(currentRow, item);
+            currentRow++;
+        }
 
-            // 1. Agregar un Título al reporte
-            worksheet.Cell("B2").Value = "Reporte de Transacciones Colegio Bautista Libertad";
-            worksheet.Cell("B2").Style.Font.Bold = true;
-            worksheet.Cell("B2").Style.Font.FontSize = 16;
-            
-            // 2. Configurar Cabeceras de la Tabla en la Fila 4
-            int headerRow = 4;
-            string[] headers = { "Fecha", "Estudiante", "N_Recibo", "Monto", "Concepto", "Status", "Cajero" };
-            
-            for (int i = 0; i < headers.Length; i++)
-            {
-                // i=0 -> B, i=1 -> C, ..., i=6 -> H
-                var cell = worksheet.Cell($"{getColumnName(i + 2)}{headerRow}");
-                cell.Value = headers[i];
-                cell.Style.Font.Bold = true;
-                cell.Style.Fill.BackgroundColor = blueColor;
-                cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-            }
+        int lastDataRow = currentRow - 1;
 
-            // 3. Llenar los datos
-            int currentRow = 5;
-            foreach (var item in _transactions)
-            {
-                worksheet.Cell($"B{currentRow}").Value = item.date;
-                worksheet.Cell($"C{currentRow}").Value = item.student;
-                worksheet.Cell($"D{currentRow}").Value = item.number;
-                
-                var totalCell = worksheet.Cell($"E{currentRow}");
-                totalCell.Value = item.total;
-                totalCell.Style.NumberFormat.SetFormat("C$#,##0.00");
-                totalCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
-                
-                worksheet.Cell($"F{currentRow}").Value = item.concept;
-                worksheet.Cell($"G{currentRow}").Value = item.isValid;
-                worksheet.Cell($"G{currentRow}").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                worksheet.Cell($"H{currentRow}").Value = item.cashier;
-                
-                if (!item.isValid)
-                {
-                    worksheet.Range($"B{currentRow}:H{currentRow}").Style.Fill.BackgroundColor = redColor;
-                }
+        // Fila de Total (solo si existen transacciones)
+        if (_transactions.Count > 0)
+        {
+            setTotalRow(currentRow, firstDataRow, lastDataRow);
+            currentRow++;
+        }
 
-                currentRow++;
-            }
+        // Bordes de la tabla
+        int borderLastRow = _transactions.Count > 0 ? currentRow - 1 : headerRow;
+        setBorder(borderLastRow, headerRow);
 
-            // 4. Agregar bordes a la tabla utilizando los métodos de tu clase abstracta (Abarcará hasta la H)
-            setBorder(currentRow - 1, headerRow);
+        // Pie de página con fecha de generación y usuario
+        setDate(currentRow + 1, _userAlias);
 
-            // 5. Agregar fila con pie de página / fecha de generación
-            setDate(currentRow + 1, "");
+        // Ajuste automático de columnas
+        worksheet.Columns($"B:{lastColumnName}").AdjustToContents();
 
-            // 6. Ajustar automáticamente las columnas al contenido (B hasta H)
-            worksheet.Columns($"B:{lastColumnName}").AdjustToContents();
+        // Congelar encabezados al hacer scroll
+        worksheet.SheetView.FreezeRows(headerRow);
 
-            // 7. Guardar en memoria y retornar los bytes
-            using (var stream = new MemoryStream())
-            {
-                workbook.SaveAs(stream);
-                return stream.ToArray();
-            }
+        using var stream = new MemoryStream();
+        workbook.SaveAs(stream);
+        return stream.ToArray();
+    }
+
+    private void setTitle(int titleRow)
+    {
+        var schoolName = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_NAME") ?? "N/A";
+
+        var titleRange = worksheet.Range($"B{titleRow}:{lastColumnName}{titleRow}").Merge();
+        titleRange.Value = $"Reporte de Transacciones - {schoolName}";
+        titleRange.Style.Font.Bold = true;
+        titleRange.Style.Font.FontSize = 15;
+        titleRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+        titleRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+        worksheet.Row(titleRow).Height = 25;
+    }
+
+    private void setHeader(int headerRow)
+    {
+        string[] headers = { "Fecha", "Estudiante", "N° Recibo", "Monto", "Concepto", "Estado", "Cajero" };
+
+        var headerRange = worksheet.Range($"B{headerRow}:{lastColumnName}{headerRow}");
+        headerRange.Style.Font.Bold = true;
+        headerRange.Style.Fill.BackgroundColor = blueColor;
+        headerRange.Style.Font.FontColor = XLColor.White;
+        headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+        headerRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+        worksheet.Row(headerRow).Height = 22;
+
+        for (int i = 0; i < headers.Length; i++)
+        {
+            worksheet.Cell($"{getColumnName(i + 2)}{headerRow}").Value = headers[i];
+        }
+    }
+
+    private void setRowData(int row, TransactionInvoiceView item)
+    {
+        // Fecha
+        var dateCell = worksheet.Cell($"B{row}");
+        dateCell.Value = item.date;
+        dateCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+        // Estudiante
+        worksheet.Cell($"C{row}").Value = item.student;
+
+        // N° Recibo
+        var numberCell = worksheet.Cell($"D{row}");
+        numberCell.Value = item.number;
+        numberCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+        // Monto
+        var totalCell = worksheet.Cell($"E{row}");
+        totalCell.Value = item.total;
+        totalCell.Style.NumberFormat.SetFormat("C$ #,##0.00");
+        totalCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+
+        // Concepto
+        worksheet.Cell($"F{row}").Value = item.concept;
+
+        // Estado
+        var statusCell = worksheet.Cell($"G{row}");
+        statusCell.Value = item.isValid ? "Válida" : "Anulada";
+        statusCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+        statusCell.Style.Font.Bold = true;
+
+        // Cajero
+        worksheet.Cell($"H{row}").Value = item.cashier;
+
+        // Resaltado elegante para transacciones anuladas
+        if (!item.isValid)
+        {
+            var rowRange = worksheet.Range($"B{row}:H{row}");
+            rowRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#FFEBEE"); // Rojo pastel suave
+            statusCell.Style.Font.FontColor = XLColor.DarkRed;
+        }
+    }
+
+    private void setTotalRow(int row, int firstDataRow, int lastDataRow)
+    {
+        // Etiqueta "Total" en la columna N° Recibo (D)
+        var labelCell = worksheet.Cell($"D{row}");
+        labelCell.Value = "Total:";
+        labelCell.Style.Font.Bold = true;
+        labelCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+
+        // Fórmula SUMA en la columna Monto (E)
+        var totalCell = worksheet.Cell($"E{row}");
+        totalCell.FormulaA1 = $"=SUM(E{firstDataRow}:E{lastDataRow})";
+        totalCell.Style.Font.Bold = true;
+        totalCell.Style.NumberFormat.SetFormat("C$ #,##0.00");
+        totalCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+
+        // Estilar la fila de total
+        var totalRange = worksheet.Range($"B{row}:{lastColumnName}{row}");
+        totalRange.Style.Fill.BackgroundColor = XLColor.LightGray;
+        totalRange.Style.Font.Bold = true;
+    }
+
+    public class Builder
+    {
+        private readonly TransactionInvoiceSheetBuilder _sheetBuilder = new();
+
+        public Builder withTransactions(List<TransactionInvoiceView> transactions)
+        {
+            _sheetBuilder._transactions = transactions;
+            return this;
+        }
+
+        public Builder withUserAlias(string userAlias)
+        {
+            _sheetBuilder._userAlias = userAlias;
+            return this;
+        }
+
+        public TransactionInvoiceSheetBuilder build()
+        {
+            _sheetBuilder.setColumnQuantity();
+            return _sheetBuilder;
         }
     }
 }
