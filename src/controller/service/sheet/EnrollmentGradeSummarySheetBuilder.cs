@@ -145,7 +145,7 @@ public class EnrollmentGradeSummarySheetBuilder : SheetBuilder
     {
         const int titleRow = 2;
         var title = worksheet.Range($"B{titleRow}:{lastColumnName}{titleRow}").Merge();
-        title.Value = "Colegio Bautista Libertad";
+        title.Value = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_NAME") ?? "N/A";
         title.Style.Font.Bold = true;
         title.Style.Font.FontSize = 14;
         title.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;

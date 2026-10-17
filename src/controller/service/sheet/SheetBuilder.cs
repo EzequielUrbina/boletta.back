@@ -63,7 +63,7 @@ public abstract class SheetBuilder
     protected void setDate(int row, string userAlias)
     {
         var dateCell = worksheet.Range($"B{row}:{lastColumnName}{row}").Merge();
-        dateCell.Value = $"Generado por wsmcbl el {DateTime.UtcNow.toStringFull(false)}, {userAlias}.";
+        dateCell.Value = $"Generado por Boletta el {DateTime.UtcNow.toStringFull(false)}, {userAlias}.";
         dateCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
     }
 }

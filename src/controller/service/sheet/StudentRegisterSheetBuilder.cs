@@ -54,7 +54,7 @@ public class StudentRegisterSheetBuilder : SheetBuilder
     { 
         var titleRow = 2;
         var titleCell = worksheet!.Range($"B{titleRow}:{lastColumnName}{titleRow}").Merge();
-        titleCell.Value = "Colegio Bautista Libertad";
+        titleCell.Value = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_NAME") ?? "N/A";
         titleCell.Style.Font.Bold = true;
         titleCell.Style.Font.FontSize = 14;
         titleCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
