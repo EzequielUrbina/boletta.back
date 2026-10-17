@@ -7,7 +7,7 @@ create table if not exists Config.Multimedia
     type serial not null,
     value varchar(1500) not null,
     foreign key (schoolyear) references secretary.schoolyear
-);
+    );
 
 
 -- Transaction_Report_View view ---
@@ -24,7 +24,7 @@ SELECT t.transactionId,
            WHEN COUNT(DISTINCT ta.typeId) = 1 THEN MAX(ta.typeId)
            ELSE 0
            END
-                                                                        AS type
+           AS type
 FROM accounting.transaction t
          JOIN
      secretary.student s ON t.studentId = s.studentId
@@ -45,17 +45,18 @@ CREATE VIEW secretary.student_to_list_view AS
 SELECT s.studentid,
        concat_ws(' ', s.name, s.secondname, s.surname, s.secondsurname) as fullName,
        s.studentstate,
-       t.name as tutor,
+       t.name AS tutor,
        sch.label AS schoolyear,
        enr.label AS enrollment
-FROM secretary.student s LEFT JOIN secretary.studenttutor t ON s.tutorid = t.tutorid LEFT JOIN
-     (
-         SELECT DISTINCT ON (aca.studentid) aca.studentid, aca.schoolyear, aca.enrollmentid
-         FROM academy.student aca
-         ORDER BY aca.studentid, aca.schoolyear DESC
-     ) aca ON aca.studentid = s.studentid
-LEFT JOIN secretary.schoolyear sch ON aca.schoolyear = sch.schoolyearid
-LEFT JOIN academy.enrollment enr ON aca.enrollmentid = enr.enrollmentid;
+FROM secretary.student s
+         LEFT JOIN secretary.studenttutor t ON s.tutorid = t.tutorid
+         LEFT JOIN
+     (SELECT DISTINCT
+      ON (aca.studentid) aca.studentid, aca.schoolyear, aca.enrollmentid
+      FROM academy.student aca
+      ORDER BY aca.studentid, aca.schoolyear DESC) aca ON aca.studentid = s.studentid
+         LEFT JOIN secretary.schoolyear sch ON aca.schoolyear = sch.schoolyearid
+         LEFT JOIN academy.enrollment enr ON aca.enrollmentid = enr.enrollmentid;
 
 
 --- debtor_student_View View ---
@@ -69,18 +70,22 @@ SELECT s.studentid,
        COUNT(deb.tariffid) AS quantity,
        SUM(deb.amount - deb.debtbalance) AS total
 FROM secretary.student s
-         LEFT JOIN (SELECT DISTINCT ON (aca.studentid) aca.studentid, aca.schoolyear, aca.enrollmentid
-                    FROM academy.student aca ORDER BY aca.studentid, aca.schoolyear DESC) aca ON aca.studentid = s.studentid
+         LEFT JOIN (SELECT DISTINCT
+                    ON (aca.studentid) aca.studentid, aca.schoolyear, aca.enrollmentid
+                    FROM academy.student aca
+                    ORDER BY aca.studentid, aca.schoolyear DESC) aca ON aca.studentid = s.studentid
          LEFT JOIN secretary.schoolyear sch ON aca.schoolyear = sch.schoolyearid
          LEFT JOIN academy.enrollment enr ON aca.enrollmentid = enr.enrollmentid
          JOIN accounting.debthistory deb ON deb.studentid = s.studentid
          JOIN accounting.tariff t on t.tariffid = deb.tariffid
-WHERE s.studentstate = TRUE AND t.duedate < CURRENT_DATE AND deb.ispaid = FALSE
+WHERE s.studentstate = TRUE
+  AND t.duedate < CURRENT_DATE
+  AND deb.ispaid = FALSE
 GROUP BY (s.studentid, sch.schoolyearid, sch.label, enr.enrollmentid, enr.label);
 
 
 -- transaction_invoice_view view
-CREATE VIEW accounting.transaction_invoice_view as 
+CREATE VIEW accounting.transaction_invoice_view as
 SELECT t.transactionid, t.number, t.total, t.date, t.isvalid,
        CONCAT_WS(' ', u.name, u.surname) AS cashier,
        t.studentid,
@@ -94,56 +99,83 @@ FROM accounting.transaction t
          JOIN config.user u ON u.userid = c.userid
 GROUP BY t.transactionid, s.studentid, u.userid;
 
-
 -- student_register_view view
-CREATE VIEW secretary.student_register_view as
+CREATE VIEW secretary.student_register_view AS
 SELECT s.studentid,
        s.minedid,
        CONCAT_WS(' ', s.name, s.secondname, s.surname, s.secondsurname) AS fullName,
-       s.studentstate as isActive,
+       s.studentstate AS isActive,
        s.sex,
        s.birthday,
        s.address,
        s.diseases,
        m.height,
        m.weight,
-       t.name as tutor,
-       t.phone as phone,
-       fa.name as fatherName,
-       fa.idcard fatherIdCard,
-       ma.name as motherName,
-       ma.idcard as motherIdCard,
-       sch.label as schoolyear,
-       e.schoolyear as schoolyearId,
+       t.name AS tutor,
+       t.phone AS phone,
+       fa.name AS fatherName,
+       fa.idcard AS fatherIdCard,
+       ma.name AS motherName,
+       ma.idcard AS motherIdCard,
+       sch.label AS schoolyear,
+       e.schoolyear AS schoolyearId,
        d.educationallevel,
-       d.label as degree,
-       d.tag as degreePosition,
-       RIGHT(e.label, 1) AS section,
-       e.tag as sectionPosition,
-       a.createdAt as enro-- grade_average_view view
-CREATE VIEW academy.grade_average_view AS
-SELECT row_number() OVER (ORDER BY gv.studentid) AS id,
-       gv.studentid, gv.partialid, gv.enrollmentid, gv.schoolyearid,
-       gv.partial, AVG(gv.grade) as grade, AVG(gv.conductgrade) as conductgrade   
-FROM academy.grade_view gv
-GROUP BY gv.studentid, gv.partialid, gv.enrollmentid, gv.schoolyearid, gv.partial;llDate,
-       a.isRepeating
-FROM secretary.student s 
-JOIN secretary.studenttutor t on t.tutorid = s.tutorid
-LEFT JOIN secretary.studentmeasurements m ON m.studentid = s.studentid
-LEFT JOIN secretary.studentparent fa ON fa.studentid = s.studentid and fa.sex = true
-LEFT JOIN secretary.studentparent ma ON ma.studentid = s.studentid and ma.sex = false
-LEFT JOIN (SELECT DISTINCT ON (a.studentid) * FROM academy.student a ORDER BY a.studentid, a.schoolyear DESC) a
-    ON a.studentid = s.studentid
-LEFT JOIN secretary.schoolyear sch ON sch.schoolyearid = a.schoolyear
-LEFT JOIN academy.enrollment e ON e.enrollmentid = a.enrollmentid
-LEFT JOIN secretary.degree d on d.degreeid = e.degreeid;
+       d.label AS degree,
+       d.tag AS degreePosition,
+        RIGHT(e.label, 1) AS section,
+        e.tag AS sectionPosition,
+        a.createdAt AS enrollDate,
+        a.isRepeating
+        FROM secretary.student s
+        JOIN secretary.studenttutor t ON t.tutorid = s.tutorid
+        LEFT JOIN secretary.studentmeasurements m ON m.studentid = s.studentid
+        LEFT JOIN secretary.studentparent fa ON fa.studentid = s.studentid AND fa.sex = true
+        LEFT JOIN secretary.studentparent ma ON ma.studentid = s.studentid AND ma.sex = false
+        LEFT JOIN (
+        SELECT DISTINCT ON (a.studentid) *
+        FROM academy.student a
+        ORDER BY a.studentid, a.schoolyear DESC
+        ) a ON a.studentid = s.studentid
+        LEFT JOIN secretary.schoolyear sch ON sch.schoolyearid = a.schoolyear
+        LEFT JOIN academy.enrollment e ON e.enrollmentid = a.enrollmentid
+        LEFT JOIN secretary.degree d ON d.degreeid = e.degreeid;
 
+
+-- grade_view view
+CREATE VIEW academy.grade_view AS
+SELECT row_number()    OVER (ORDER BY g.gradeid) AS id, g.studentId,
+       sp.partialId,
+       sp.subjectId,
+       sp.teacherId,
+       sp.enrollmentId,
+       e.schoolyear as schoolyearId,
+       p.semester,
+       p.partial,
+       g.grade,
+       g.conductGrade,
+       g.label
+FROM academy.grade g
+         JOIN academy.subject_partial sp ON sp.subjectpartialid = g.subjectpartialid
+         JOIN academy.partial p ON p.partialid = sp.partialid
+         JOIN academy.enrollment e ON e.enrollmentid = sp.enrollmentid;
+
+
+-- grade_average_view view
+CREATE VIEW academy.grade_average_view AS
+SELECT row_number()            OVER (ORDER BY gv.studentid) AS id, gv.studentid,
+       gv.partialid,
+       gv.enrollmentid,
+       gv.schoolyearid,
+       gv.partial,
+       AVG(gv.grade)        AS grade,
+       AVG(gv.conductgrade) AS conductgrade
+FROM academy.grade_view gv
+GROUP BY gv.studentid, gv.partialid, gv.enrollmentid, gv.schoolyearid, gv.partial;
 
 -- subject_graded_view view
 CREATE VIEW academy.subject_graded_view as
-SELECT row_number() OVER (ORDER BY sp.subjectid) AS id,
-       sp.subjectid,
+SELECT row_number()
+       OVER (ORDER BY sp.subjectid) AS id, sp.subjectid,
        sp.teacherid,
        sp.partialid,
        COUNT(*) AS studentCount,
@@ -153,35 +185,20 @@ FROM academy.grade g
               on sp.subjectpartialid = g.subjectpartialid
 GROUP BY sp.subjectid, sp.teacherid, sp.partialid;
 
-
 -- student_enroll_payment_view view
 CREATE VIEW accounting.student_enroll_payment_view as
-SELECT s.studentid, t.schoolyear as schoolyearid, aca.enrollmentid FROM accounting.student s
-JOIN secretary.student ss ON ss.studentid = s.studentid
-JOIN accounting.debthistory d ON d.studentid = s.studentid
-JOIN accounting.tariff t ON t.tariffid = d.tariffid
-LEFT JOIN academy.student aca on aca.studentid = s.studentid
-WHERE ss.studentstate = true AND t.typeid = 2 AND
-CASE
-    WHEN d.amount = 0 THEN 1
-    ELSE (d.debtbalance / d.amount)
-    END >= 0.4;
-
-
-
--- grade_view view
-CREATE VIEW academy.grade_view AS 
-SELECT row_number() OVER (ORDER BY g.gradeid) AS id,
-       g.studentId, sp.partialId, sp.subjectId, sp.teacherId,
-       sp.enrollmentId, e.schoolyear as schoolyearId, p.semester, p.partial,
-       g.grade, g.conductGrade, g.label
-FROM academy.grade g 
-JOIN academy.subject_partial sp ON sp.subjectpartialid = g.subjectpartialid
-JOIN academy.partial p ON p.partialid = sp.partialid
-JOIN academy.enrollment e ON e.enrollmentid = sp.enrollmentid;
-
-
-
+SELECT s.studentid, t.schoolyear as schoolyearid, aca.enrollmentid
+FROM accounting.student s
+         JOIN secretary.student ss ON ss.studentid = s.studentid
+         JOIN accounting.debthistory d ON d.studentid = s.studentid
+         JOIN accounting.tariff t ON t.tariffid = d.tariffid
+         LEFT JOIN academy.student aca on aca.studentid = s.studentid
+WHERE ss.studentstate = true
+  AND t.typeid = 2
+  AND CASE
+          WHEN d.amount = 0 THEN 1
+          ELSE (d.debtbalance / d.amount)
+          END >= 0.4;
 
 -- conduct_grade_average_view view
 CREATE VIEW academy.conduct_grade_average_view AS
@@ -193,7 +210,7 @@ GROUP BY gv.studentid, gv.partialid, gv.enrollmentid, gv.schoolyearid, gv.partia
 -- grade_average_view view
 CREATE VIEW academy.grade_average_view AS
 SELECT row_number() OVER (ORDER BY gv.studentid) AS id,
-       gv.studentid, gv.partialid, gv.enrollmentid, gv.schoolyearid,
+    gv.studentid, gv.partialid, gv.enrollmentid, gv.schoolyearid,
        gv.partial, (SUM(gv.grade) + cd.conductgrade) / (COUNT(gv.grade) + 1) as grade, cd.conductgrade
 FROM academy.grade_view gv
          LEFT JOIN academy.conduct_grade_average_view cd ON
@@ -216,10 +233,10 @@ SELECT t.tariffId,
        SUM(tt.amount) as amount,
        t.typeid as tariffType
 FROM accounting.transaction tra
-LEFT JOIN accounting.transaction_tariff tt ON tt.transactionId = tra.transactionid
-LEFT JOIN accounting.tariff t ON t.tariffId = tt.tariffId
-LEFT JOIN academy.student asd ON asd.studentId = tra.studentId and asd.schoolyear = t.schoolyear
-LEFT JOIN academy.enrollment e ON e.enrollmentId = asd.enrollmentId
+         LEFT JOIN accounting.transaction_tariff tt ON tt.transactionId = tra.transactionid
+         LEFT JOIN accounting.tariff t ON t.tariffId = tt.tariffId
+         LEFT JOIN academy.student asd ON asd.studentId = tra.studentId and asd.schoolyear = t.schoolyear
+         LEFT JOIN academy.enrollment e ON e.enrollmentId = asd.enrollmentId
 where tra.isvalid = TRUE
 GROUP BY t.tariffId, tra.studentId, t.schoolyear, e.enrollmentId, t.educationalLevel,
          DATE_TRUNC('month', tra.date), t.dueDate, t.typeid;
