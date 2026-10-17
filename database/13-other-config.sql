@@ -157,16 +157,26 @@ FROM academy.grade g
          JOIN academy.partial p ON p.partialid = sp.partialid
          JOIN academy.enrollment e ON e.enrollmentid = sp.enrollmentid;
 
+-- conduct_grade_average_view view
+CREATE VIEW academy.conduct_grade_average_view AS
+SELECT gv.studentid, gv.partialid, gv.enrollmentid, gv.schoolyearid, AVG(gv.conductgrade) as conductgrade
+FROM academy.grade_view gv
+GROUP BY gv.studentid, gv.partialid, gv.enrollmentid, gv.schoolyearid, gv.partial;
+
 
 -- grade_average_view view
-SELECT row_number() OVER (ORDER BY gv.studentid) AS id, gv.studentid,
+CREATE OR REPLACE VIEW academy.grade_average_view
+ AS
+SELECT row_number() OVER (ORDER BY gv.studentid) AS id,
+    gv.studentid,
        gv.partialid,
        gv.enrollmentid,
        gv.schoolyearid,
        gv.partial,
-       (sum(gv.grade) + cd.conductgrade) / (count(gv.grade) + 1)::numeric AS grade, cd.conductgrade
+       (sum(gv.grade) + cd.conductgrade) / (count(gv.grade) + 1)::numeric AS grade,
+    cd.conductgrade
 FROM academy.grade_view gv
-LEFT JOIN academy.conduct_grade_average_view cd ON cd.studentid::text = gv.studentid::text AND cd.partialid = gv.partialid AND cd.enrollmentid::text = gv.enrollmentid::text AND cd.schoolyearid::text = gv.schoolyearid::text
+         LEFT JOIN academy.conduct_grade_average_view cd ON cd.studentid::text = gv.studentid::text AND cd.partialid = gv.partialid AND cd.enrollmentid::text = gv.enrollmentid::text AND cd.schoolyearid::text = gv.schoolyearid::text
 GROUP BY gv.studentid, gv.partialid, gv.enrollmentid, gv.schoolyearid, gv.partial, cd.conductgrade;
 
 -- subject_graded_view view
@@ -196,13 +206,6 @@ WHERE ss.studentstate = true
           WHEN d.amount = 0 THEN 1
           ELSE (d.debtbalance / d.amount)
           END >= 0.4;
-
--- conduct_grade_average_view view
-CREATE VIEW academy.conduct_grade_average_view AS
-SELECT gv.studentid, gv.partialid, gv.enrollmentid, gv.schoolyearid, AVG(gv.conductgrade) as conductgrade
-FROM academy.grade_view gv
-GROUP BY gv.studentid, gv.partialid, gv.enrollmentid, gv.schoolyearid, gv.partial;
-
 
 -- grade_average_view view
 CREATE VIEW academy.grade_average_view AS
