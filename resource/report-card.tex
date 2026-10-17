@@ -13,6 +13,9 @@
 \usepackage[left=1.5cm, right=1.5cm, top=4cm, bottom=2.5cm, headheight=2cm, headsep=1cm]{geometry}
 
 \newcommand{\schoolYear}{schoolyear.value}
+\newcommand{\schoolName}{school.name.value}
+\newcommand{\schoolEmail}{school.email.value}
+
 
 \pagestyle{fancy}
 \fancyhead[C]
@@ -25,9 +28,9 @@
         \hspace{0.01\textwidth}
         \begin{minipage}[c][2.5cm]{0.6\textwidth}
             \centering
-            \textbf{\LARGE Colegio Bautista Libertad}\\[0.2cm]
+            \textbf{\LARGE \schoolName}\\[0.2cm]
             \textbf{\Large Boleta \schoolYear}\\[0.1cm]
-            Contacto: secretaria@cbl-edu.com
+            Contacto: \schoolEmail
         \end{minipage}
     }
 }
@@ -99,6 +102,5 @@
             \multicolumn{2}{r|}{\finalAverage} \\\hline
         \end{tabular}
     \end{table}
-    Cualquier duda o comentario, puede escribir a: \textbf{\teacherMail}
-    \footnotetext{Impreso por wsmcbl el \currentDatetime\secretaryName.}
+    \footnotetext{Impreso por Boletta el \currentDatetime\secretaryName.}
 \end{document}

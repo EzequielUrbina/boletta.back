@@ -23,6 +23,7 @@ public class ReportCardLatexBuilder(string templatesPath, string outPath, string
     private string schoolName { get; set; } = null!;
     private string schoolPrincipal { get; set; } = null!;
     private string schoolAddress { get; set; } = null!;
+    private string schoolMail { get; set; } = null!;
 
     
     private readonly string _templateName = templateName;
@@ -42,12 +43,15 @@ public class ReportCardLatexBuilder(string templatesPath, string outPath, string
         content.Replace("teacher.name.value", teacher.fullName());
         content.Replace("teacher.mail.value", teacher.user.email);
         
+        content.Replace("school.name.value", schoolName); 
+        content.Replace("school.email.value", schoolMail); 
+
+        
         // 4. CONDICIONAL DE SEGURIDAD: Solo si es la nueva plantilla, agregamos sus metadatos
         if (_templateName == "grade-report")
         {
             content.Replace("mined.id.value", (student.student != null && !string.IsNullOrEmpty(student.student.minedId)) ? student.student.minedId : student.studentId);
             content.Replace("principal.name.value", schoolPrincipal); 
-            content.Replace("school.name.value", schoolName); 
             content.Replace("school.address.value", schoolAddress); 
             content.Replace("educational.level.value", educationLevel); 
             content.Replace("shift.value", "Matutino");
@@ -211,6 +215,7 @@ public class ReportCardLatexBuilder(string templatesPath, string outPath, string
         private string? _educationLevel;
         private string _schoolyear = null!;
         private string _schoolName = null!;
+        private string _schoolEmail = null!;
         private string _schoolAddress = null!;
         private string _schoolPrincipal = null!;
 
@@ -245,6 +250,7 @@ public class ReportCardLatexBuilder(string templatesPath, string outPath, string
             latexBuilder.schoolName = _schoolName;
             latexBuilder.schoolAddress = _schoolAddress;
             latexBuilder.schoolPrincipal = _schoolPrincipal;
+            latexBuilder.schoolMail = _schoolEmail;
 
             return latexBuilder;
         }
@@ -309,6 +315,12 @@ public class ReportCardLatexBuilder(string templatesPath, string outPath, string
         public Builder withSchoolName(string parameter)
         {
             _schoolName = parameter;
+            return this;
+        }
+        
+        public Builder withSchoolEmail(string parameter)
+        {
+            _schoolEmail = parameter;
             return this;
         }
         

@@ -191,6 +191,9 @@ public class DocumentMaker(DaoFactory daoFactory) : PdfMaker
         var enrollment = await daoFactory.enrollmentDao!.getById(student.enrollmentId!);
         var schoolyear = await daoFactory.schoolyearDao!.getCurrent();
         var partialList = await daoFactory.partialDao!.getListForCurrentSchoolyear();
+        var schoolName = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_NAME") ?? "N/A";
+        var schoolMail = Environment.GetEnvironmentVariable("BOLETTA_SCHOOL_EMAIL") ?? "N/A";
+
 
         var latexBuilder = new ReportCardLatexBuilder.Builder(resource, $"{resource}/out/card")
             .withStudent(student)
@@ -201,6 +204,8 @@ public class DocumentMaker(DaoFactory daoFactory) : PdfMaker
             .withSchoolyear(schoolyear.label)
             .withSubjectAreaList(await daoFactory.subjectAreaDao!.getAll())
             .withSubjectList(await daoFactory.academySubjectDao!.getByEnrollmentId(student.enrollmentId!))
+            .withSchoolName(schoolName)
+            .withSchoolEmail(schoolMail)
             .build();
 
         setLatexBuilder(latexBuilder);
