@@ -41,8 +41,8 @@ public class SchoolyearDaoPostgres(PostgresContext context)
         return await getByLabel(DateTime.Now.Year);
     }
 
-    private static int newOrCurrentLabel() => DateTime.Today.Month > 10 ? DateTime.Today.Year + 1 : DateTime.Today.Year;
-
+    private static int newOrCurrentLabel() => DateTime.Today.Month >= 10 ? DateTime.Today.Year + 1 : DateTime.Today.Year;
+    
     public async Task<SchoolyearEntity> getCurrentOrNew()
     {
         try
@@ -77,13 +77,13 @@ public class SchoolyearDaoPostgres(PostgresContext context)
 
     public async Task<SchoolyearEntity> createNewOrFail()
     {
-        if (DateTime.Today.Month < 11)
+        if (DateTime.Today.Month < 10)
         {
-            throw new ConflictException("The new schoolyear cannot be created on this date. The start date is november 1st.");
+            throw new ConflictException("The new schoolyear cannot be created on this date. The start date is october 1st.");
         }
-        
+    
         await checkNewSchoolyearCreated();
-        
+    
         var year = newOrCurrentLabel();
         var schoolYearEntity = new SchoolyearEntity
         {
@@ -98,7 +98,7 @@ public class SchoolyearDaoPostgres(PostgresContext context)
 
         return schoolYearEntity;
     }
-
+    
     private async Task checkNewSchoolyearCreated()
     {
         var result = await entities
