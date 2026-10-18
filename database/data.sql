@@ -10,10 +10,7 @@ values ('admin', 'Full system access.'),
 
 insert into config.user(roleid, name, secondname, surname, secondsurname, email, userstate, createdat, updatedat, password)
 values (4, 'Docente', 'por', 'Defecto', 'del sistema', 'user.default@boletta.app', true, now(), now(),'AQAAAAIAAYagAAAAEBA+otefABAFYU//4mkRSCB+4Ehre7sDid871rFP7vW3snwji5+cxvjXsWUa1AasZw=='),
-       (1, 'Kenny', 'Jordan', 'Tinoco', 'Cerda', 'kenny.tinoco@boletta.app', true, now(), now(),'AQAAAAIAAYagAAAAEOKy+ElmYTF+ClhQ68aqO1TCREwarjQMzylachhHEo0/duwGTqkAf5IWQRQeNdEH+g=='),
-       (1, 'Admin', 'por', 'Defecto',null,'admin@boletta.app', true, now(), now(),'AQAAAAIAAYagAAAAEB74WP4DVQ7eME5thSW/ObX5yiT0jyJKmv/vPC9lO3DEZFPzD5yO9s3AReuMfaLvxw=='),
-       (3, 'Ezequiel', 'De jesús', 'Urbina', 'Zeledón', 'ezequiel.urbina@boletta.app', true, now(), now(),'AQAAAAIAAYagAAAAEK/ObbY+PMQMXK/Q2rqJQyZKPUwiZGPALh/Bww0t6j9gozilS/PVoYQfLo8eDoHmFA==');
-
+       (1, 'Ezequiel', 'De jesús', 'Urbina', 'Zeledón', 'ezequiel.urbina@boletta.app', true, now(), now(),'AQAAAAIAAYagAAAAEK/ObbY+PMQMXK/Q2rqJQyZKPUwiZGPALh/Bww0t6j9gozilS/PVoYQfLo8eDoHmFA==');
 
 
 insert into config.permission(name, spanishname, area, description)
