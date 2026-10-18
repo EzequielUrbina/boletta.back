@@ -34,7 +34,7 @@ public class UpdateUserController : BaseController
         user.update(value);
         await daoFactory.ExecuteAsync();
 
-        await assignNextcloudGroup(user, nextCloudGroup);
+        //await assignNextcloudGroup(user, nextCloudGroup);
     }
 
     private async Task assignNextcloudGroup(UserEntity user, string nextCloudGroup)
@@ -54,12 +54,11 @@ public class UpdateUserController : BaseController
         {
             throw new EntityNotFoundException("UserEntity", userId);
         } 
-        
+    
         await daoFactory.permissionDao!.verifyIdListOrFail(permissionIdList);
 
         var list = permissionIdList.Select(e => new UserPermissionEntity((Guid)user.userId!, e)).ToList();
-        list = user.checkPermissionsAlreadyAssigned(list);
-
+        
         user.updatePermissionList(list, daoFactory.userPermissionDao!);
         await daoFactory.ExecuteAsync();
     }
