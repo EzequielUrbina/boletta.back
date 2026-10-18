@@ -85,8 +85,9 @@ public class UpdateUserController : BaseController
 
         user.password = password;
 
-        await updatePasswordEmailAccount(user);
-        await nextcloudUserCreator.updateUserPassword(user);
+        //Deshabilitado porque no están incluidos en el plan de boletta.
+        //await updatePasswordEmailAccount(user);
+        //await nextcloudUserCreator.updateUserPassword(user);
         
         return user;
     }
