@@ -104,7 +104,3 @@ RETURN QUERY SELECT v_count, v_total;
 RAISE NOTICE 'Proceso completado: % registros insertados, monto total: %', v_count, v_total;
 END;
 $BODY$;
-
-ALTER FUNCTION accounting.generatestudentdebts(character varying, integer, character varying)
-    OWNER TO "user";
-
