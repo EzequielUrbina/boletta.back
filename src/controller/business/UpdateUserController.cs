@@ -120,6 +120,7 @@ public class UpdateUserController : BaseController
             await updateUserPassword(userId);
         }
         
-        await nextcloudUserCreator.changeState(user);
+        //Deshabilitados por no ir con el plan actual de Boletta.
+       // await nextcloudUserCreator.changeState(user);
     }
 }
